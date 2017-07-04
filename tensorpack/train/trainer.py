@@ -43,4 +43,5 @@ class SimpleTrainer(Trainer):
             cost_var = model.get_cost()
 
         opt = self.model.get_optimizer()
-        self.train_op = opt.minimize(cost_var, name='min_op')
+	variables = self.model.get_trainable_variable()
+        self.train_op = opt.minimize(cost_var, name='min_op', var_list = variables)
