@@ -128,17 +128,32 @@ class ModelDesc(object):
         return self.cost
 
     @memoized
-    def get_optimizer(self):
+    def get_trainable_variable(self):
         """
-        Return the optimizer used in the task.
-        Used by some of the tensorpack :class:`Trainer` which assume single optimizer.
-        You can (and should) ignore this method if you use a custom trainer with more than one optimizers.
+        return the optimizer used in the task.
+        used by some of the tensorpack :class:`trainer` which assume single optimizer.
+        you can (and should) ignore this method if you use a custom trainer with more than one optimizers.
 
-        Users of :class:`ModelDesc` will need to implement `_get_optimizer()`,
+        users of :class:`modeldesc` will need to implement `_get_trainable_variable()`,
         which will only be called once per each model.
 
-        Returns:
-            a :class:`tf.train.Optimizer` instance.
+        returns:
+            a list of trainable variables
+        """
+        return self._get_trainable_variable()
+
+    @memoized
+    def get_optimizer(self):
+        """
+        return the optimizer used in the task.
+        used by some of the tensorpack :class:`trainer` which assume single optimizer.
+        you can (and should) ignore this method if you use a custom trainer with more than one optimizers.
+
+        users of :class:`modeldesc` will need to implement `_get_optimizer()`,
+        which will only be called once per each model.
+
+        returns:
+            a :class:`tf.train.optimizer` instance.
         """
         return self._get_optimizer()
 
