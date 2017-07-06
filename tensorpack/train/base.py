@@ -138,6 +138,7 @@ class Trainer(object):
         if self.is_chief:
             logger.info("Initializing the session ...")
             self.config.session_init.init(self.sess)
+            print self.sess
         else:
             assert isinstance(self.config.session_init, JustCurrentSession), \
                 "session_init is only valid for chief worker session!"
@@ -186,6 +187,7 @@ class Trainer(object):
                     for self.local_step in range(self.config.steps_per_epoch):
                         if self.hooked_sess.should_stop():
                             return
+                        # print "run step"
                         self.run_step()  # implemented by subclass
                         self._callbacks.trigger_step()
                     self._callbacks.after_epoch()

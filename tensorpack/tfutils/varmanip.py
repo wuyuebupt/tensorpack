@@ -29,15 +29,18 @@ def get_savename_from_varname(
         str: the name used to save the variable
     """
     name = varname
+    print name
     if PREDICT_TOWER in name:
         logger.error("No variable under '{}' name scope should be saved!".format(PREDICT_TOWER))
         # don't overwrite anything in the current prediction graph
-        return None
+        return name
+    #    return None
     if varname_prefix is not None \
             and name.startswith(varname_prefix):
         name = name[len(varname_prefix) + 1:]
     if savename_prefix is not None:
         name = savename_prefix + '/' + name
+    # print name
     return name
 
 
@@ -191,7 +194,9 @@ def is_training_name(name):
     """
     # TODO: maybe simply check against TRAINABLE_VARIABLES and MODEL_VARIABLES?
     # TODO or use get_slot_names()
+    print name
     name = get_op_tensor_name(name)[0]
+    print 'faterget', name
     if name.endswith('/Adam') or name.endswith('/Adam_1'):
         return True
     if name.endswith('/Momentum'):
@@ -204,4 +209,7 @@ def is_training_name(name):
         return True
     if 'EMA_summary/' in name:
         return True
+    if 'classier' in name:
+        return True
+    # print "nothing false"
     return False

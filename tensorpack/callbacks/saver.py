@@ -68,6 +68,8 @@ class ModelSaver(Callback):
                 write_version=tf.train.SaverDef.V2,
                 save_relative_paths=True)
         self.meta_graph_written = False
+        print self.var_collections
+        print vars
 
     def _trigger(self):
         try:

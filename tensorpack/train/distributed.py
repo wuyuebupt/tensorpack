@@ -206,6 +206,7 @@ class DistributedReplicatedTrainer(SingleCostFeedfreeTrainer):
 
         # TODO add options to synchronize less
         main_fetch = tf.group(*var_update_ops, name='main_fetches')
+        print "steup train_op in distributed"
         self.train_op = self._add_sync_queues_and_barrier(
             'post_copy_barrier', [main_fetch])
 

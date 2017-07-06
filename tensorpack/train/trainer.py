@@ -32,6 +32,7 @@ class SimpleTrainer(Trainer):
     def run_step(self):
         """ Feed data into the graph and run the updates. """
         feed = self._input_source.next_feed()
+        # print self.train_op
         self.hooked_sess.run(self.train_op, feed_dict=feed)
 
     def _setup(self):
@@ -44,4 +45,6 @@ class SimpleTrainer(Trainer):
 
         opt = self.model.get_optimizer()
 	variables = self.model.get_trainable_variable()
-        self.train_op = opt.minimize(cost_var, name='min_op', var_list = variables)
+        # print variables
+        self.train_op = opt.minimize(cost_var, var_list = variables, name='min_op')
+        # print self.train_op

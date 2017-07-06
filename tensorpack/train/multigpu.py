@@ -191,6 +191,11 @@ class SyncMultiGPUTrainerParameterServer(MultiGPUTrainerBase, SingleCostFeedfree
         grad_list = MultiGPUTrainerBase.build_on_multi_tower(
             self.config.tower, lambda: self._get_cost_and_grad()[1], devices)
         MultiGPUTrainerBase._check_grad_list(grad_list)
+        # print grad_list
+        # print len(grad_list)
+	# print grad_list[0][-2:]
+        # TODO get good grad list
+        # grad_list = [grad_list[0][-2:]]
 
         # debug tower performance (without update):
         # ops = [k[0] for k in grad_list[1]] + [k[0] for k in grad_list[0]]
@@ -198,8 +203,9 @@ class SyncMultiGPUTrainerParameterServer(MultiGPUTrainerBase, SingleCostFeedfree
         # return
 
         grads = self._average_grads(grad_list)
+        # print grads
         # grads = grad_list[0]
-
+        # print "step up train_op multigpu 1"
         self.train_op = self.model.get_optimizer().apply_gradients(
             grads, name='train_op')
 
@@ -269,6 +275,7 @@ class SyncMultiGPUTrainerReplicated(MultiGPUTrainerBase, SingleCostFeedfreeTrain
                 grad_and_vars = [x[idx] for x in grads]
                 train_ops.append(opt.apply_gradients(
                     grad_and_vars, name='apply_grad_{}'.format(idx)))
+        print "set up trainop here"
         self.train_op = tf.group(*train_ops, name='train_op')
         self.register_callback(RunOp(
             SyncMultiGPUTrainerReplicated.get_post_init_ops,

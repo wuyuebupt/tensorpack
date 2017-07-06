@@ -41,6 +41,7 @@ class FeedfreeTrainerBase(Trainer):
 
     def run_step(self):
         """ Simply run ``self.train_op``."""
+        # print self.train_op
         self.hooked_sess.run(self.train_op)
 
 
@@ -89,6 +90,7 @@ class SimpleFeedfreeTrainer(SingleCostFeedfreeTrainer):
         with TowerContext('', is_training=True):
             cost, grads = self._get_cost_and_grad()
         opt = self.model.get_optimizer()
+        print "setup train_op here"
         self.train_op = opt.apply_gradients(grads, name='min_op')
         # skip training
         # self.train_op = tf.group(*self._input_tensors)
