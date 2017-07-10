@@ -138,7 +138,7 @@ class Trainer(object):
         if self.is_chief:
             logger.info("Initializing the session ...")
             self.config.session_init.init(self.sess)
-            print self.sess
+            # print self.sess
         else:
             assert isinstance(self.config.session_init, JustCurrentSession), \
                 "session_init is only valid for chief worker session!"

@@ -115,7 +115,7 @@ class SaverRestore(SessionInit):
         graph_vars = tf.global_variables()
         chkpt_vars_used = set()
         for v in graph_vars:
-            print v.name, self.prefix
+            # print v.name, self.prefix
             name = get_savename_from_varname(v.name, varname_prefix=self.prefix)
             if name in self.ignore and reader.has_tensor(name):
                 logger.info("Variable {} in the graph will be not loaded from the checkpoint!".format(name))
@@ -125,7 +125,7 @@ class SaverRestore(SessionInit):
                     chkpt_vars_used.add(name)
                 else:
                     vname = v.op.name
-                    print vname
+                    # print vname
                     if not is_training_name(vname):
                         logger.warn("Variable {} in the graph not found in checkpoint!".format(vname))
         if len(chkpt_vars_used) < len(chkpt_vars):

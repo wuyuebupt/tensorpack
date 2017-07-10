@@ -110,20 +110,26 @@ class Model(ModelDesc):
                       .apply(layer, 'group2', block_func, 256, defs[2], 2)
                       .apply(layer, 'group3', block_func, 512, defs[3], 2)
                       .BNReLU('bnlast')
-                      .GlobalAvgPooling('gap')
-                      .FullyConnected('linear', 10000, nl=tf.identity)())
+                      .GlobalAvgPooling('gap')())
+                      # .FullyConnected('linear', 10000, nl=tf.identity)())
 
-        loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=label)
+        numclasses = 10000
+        y = FullyConnected('y', logits,  numclasses, nl=tf.identity)
+        newclasses = 100
+        ynew = FullyConnected('ynew', logits, newclasses, nl=tf.identity)
+        y_all = tf.concat([y, ynew], 1)
+	softmaxout = tf.nn.softmax(y_all, name='softmaxout')
+	(top1, index) = tf.nn.top_k(softmaxout, k=1, name='outputtop1')
+
+        loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y_all, labels=label)
         loss = tf.reduce_mean(loss, name='xentropy-loss')
 
-        wrong = prediction_incorrect(logits, label, 1, name='wrong-top1')
+        wrong = prediction_incorrect(y_all, label, 1, name='wrong-top1')
         add_moving_summary(tf.reduce_mean(wrong, name='train-error-top1'))
 
-        wrong = prediction_incorrect(logits, label, 5, name='wrong-top5')
+        wrong = prediction_incorrect(y_all, label, 5, name='wrong-top5')
         add_moving_summary(tf.reduce_mean(wrong, name='train-error-top5'))
 	
-	softmaxout = tf.nn.softmax(logits, name='softmaxout')
-	(top1, index) = tf.nn.top_k(softmaxout, k=1, name='outputtop1')
 
         wd_cost = regularize_cost('.*/W', l2_regularizer(1e-4), name='l2_regularize_loss')
         add_moving_summary(loss, wd_cost)
@@ -233,7 +239,7 @@ def eval_on_ILSVRC12(model_file, data_dir, outfile):
         model=Model(),
         session_init=get_model_loader(model_file),
         input_names=['input', 'label'],
-        output_names=['softmaxout', 'outputtop1', 'label']
+        output_names=['softmaxout', 'outputtop1', 'label','y/W','y/b','ynew/W','ynew/b']
         # output_names=['wrong-top1', 'wrong-top5']
     )
     pred = SimpleDatasetPredictor(pred_config, ds)
@@ -250,7 +256,6 @@ def eval_on_ILSVRC12(model_file, data_dir, outfile):
 		# print confidence, pred, label
 		outline = "{} {} {}\n".format(confidence, pred, label)
 		f.write(outline)
-
 		# print o[1][i], np.where(o[0][i] == o[1][i]) , o[2][i]
         # acc1.feed(o[0].sum(), batch_size)
         # acc5.feed(o[1].sum(), batch_size)
@@ -265,7 +270,7 @@ if __name__ == '__main__':
     parser.add_argument('--load', help='load model', required=True)
     parser.add_argument('--fake', help='use fakedata to test or benchmark this model', action='store_true')
     parser.add_argument('--data_format', help='specify NCHW or NHWC', type=str, default='NCHW')
-    parser.add_argument('--out', help='', help='ourfile')
+    parser.add_argument('--out',  help='ourfile')
     parser.add_argument('-d', '--depth', help='resnet depth',
                         type=int, default=18, choices=[18, 34, 50, 101])
     # parser.add_argument('--eval', action='store_true')
