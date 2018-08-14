@@ -27,7 +27,7 @@ class customMeta(object):
         assert not (dir is None)
         self.dir = dir
         f = os.path.join(self.dir, 'synsets.txt')
-        assert os.path.isfile(f)
+        # assert os.path.isfile(f)
 
 #    def get_synset_words_1000(self):
 #        """
@@ -66,7 +66,7 @@ class customMeta(object):
 #        add_label_to_fname = (name != 'train' and dir_structure != 'original')
 #        if add_label_to_fname:
 #            synset = self.get_synset_1000()
-        synset = self.get_synset_1000()
+        # synset = self.get_synset_1000()
 
         fname = os.path.join(self.dir, name + '.txt')
         assert os.path.isfile(fname), fname
@@ -164,7 +164,7 @@ class customData(RNGDataFlow):
         meta = customMeta(meta_dir)
 	assert dir_structure == 'train'
         self.imglist = meta.get_image_list(name, dir_structure)
-        self.synset = meta.get_synset_1000()
+        # self.synset = meta.get_synset_1000()
 
 	assert not include_bb
         if include_bb:
